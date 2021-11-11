@@ -16,8 +16,8 @@ export const QualitiesProvider = ({ children }) => {
         const { content } = await qualityService.fetchAll();
         setQualities(content);
         setIsLoading(false);
-      } catch (err) {
-        const { message } = err.response.data;
+      } catch (error) {
+        const { message } = error.response.data;
         setError(message);
       }
     };
@@ -51,7 +51,18 @@ export const QualitiesProvider = ({ children }) => {
       const { content } = await qualityService.create(data);
       setQualities((prevState) => [...prevState, content]);
       return content;
-    } catch (err) {
+    } catch (error) {
+      const { message } = error.response.data;
+      setError(message);
+    }
+  };
+
+  const deleteQuality = async (id) => {
+    try {
+      const { content } = await qualityService.delete(id);
+      setQualities((prevState) => prevState.filter((item) => item._id !== id));
+      return content;
+    } catch (error) {
       const { message } = error.response.data;
       setError(message);
     }
@@ -59,7 +70,13 @@ export const QualitiesProvider = ({ children }) => {
 
   return (
     <QualitiesContext.Provider
-      value={{ qualities, getQuality, updateQuality, addQuality }}
+      value={{
+        qualities,
+        getQuality,
+        updateQuality,
+        addQuality,
+        deleteQuality,
+      }}
     >
       {!isLoading ? children : "Loading Qualities ...."}
     </QualitiesContext.Provider>
